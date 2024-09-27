@@ -6,6 +6,9 @@ import psutil
 import logging
 
 # Colors
+from pygame_sprite_manager.io_helper.load import ints_from_byte_file
+from pygame_sprite_manager.io_helper.save import ints_to_byte_file, save_to_cache
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -101,7 +104,7 @@ def get_palette_display(selected):
     palette_display.fill(CLR)
     palette_display.set_colorkey(CLR)
     for i in range(0, len(PALETTE)):
-        if (i == selected):
+        if i == selected:
             pygame.draw.rect(palette_display, GREEN,
                              pygame.Rect((TILE_WIDTH * (i + 0.385), TILE_WIDTH * 0.385),
                                          (TILE_WIDTH * 0.75, TILE_WIDTH / 4)))
@@ -134,34 +137,9 @@ def get_background():
     return background
 
 
-def ints_from_byte_file(filename):
-    file = open("files/" + filename, "rb")
-    ints = []
-    for b in file.read():
-        ints.append(int(b))
-    file.close()
-    return ints
-
-
-def ints_to_byte_file(filename, ints):
-    file = open("files/" + filename, "wb")
-    file.write(bytes(ints))
-    file.close()
-
-
-def palette_to_int_array():
-    ints = []  # TODO: Could be implemented better
-    for color in PALETTE:
-        ints.append(color[0])
-        ints.append(color[1])
-        ints.append(color[2])
-    return ints
-
-
 def sprite_to_int_array():
     global PALETTE, ARRAY, HORIZ_TILES, VERT_TILES
-    ints = []  # TODO: Could be implemented better
-    ints.append(len(PALETTE))
+    ints = [len(PALETTE)]  # TODO: Could be implemented better
     for color in PALETTE:
         ints.append(color[0])
         ints.append(color[1])
@@ -174,6 +152,13 @@ def sprite_to_int_array():
     print(ints)
     return ints
 
+def palette_to_int_array():
+    ints = []  # TODO: Could be implemented better
+    for color in PALETTE:
+        ints.append(color[0])
+        ints.append(color[1])
+        ints.append(color[2])
+    return ints
 
 def load_sprite_from_int_array(ints):
     global PALETTE, ARRAY, HORIZ_TILES, VERT_TILES
@@ -197,11 +182,6 @@ def load_sprite_from_int_array(ints):
         for y in range(0, VERT_TILES):
             ARRAY[x].append(ints[count])
             count += 1
-
-
-def save_to_cache():
-    ints_to_byte_file("cache", sprite_to_int_array())
-
 
 def main():
     global PALETTE, CURRENT_COLOR, ARRAY, NEED_UPDATE, SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, IDEAL_WIDTH, IDEAL_HEIGHT, FILENAME, HORIZ_TILES, VERT_TILES, GRID, BG_COLOR, BG_COLORS
